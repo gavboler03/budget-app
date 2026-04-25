@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  FastApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: budget-api
+      Runtime: python3.11
+      Handler: main.handler
+      CodeUri: backend/
+      MemorySize: 512
+      Timeout: 30
+
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+
+      Environment:
+        Variables:
+          DB_USER: your_user
+          DB_PASSWORD: your_password
+          DB_HOST: your-rds-proxy-endpoint
+          DB_NAME: your_db
+          DB_PORT: 5432
+
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-xxxxxxxx
+        SubnetIds:
+          - subnet-xxxx
+          - subnet-yyyy
