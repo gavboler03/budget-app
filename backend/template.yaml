@@ -8,28 +8,41 @@ Resources:
       FunctionName: budget-api
       Runtime: python3.11
       Handler: main.handler
-      CodeUri: backend/
+      CodeUri: .
       MemorySize: 512
       Timeout: 30
 
       Events:
-        Api:
+        ApiRoot:
+          Type: Api
+          Properties:
+            Path: /
+            Method: ANY
+
+        ApiProxy:
           Type: Api
           Properties:
             Path: /{proxy+}
             Method: ANY
 
+      Policies:
+        - AWSLambdaVPCAccessExecutionRole
+        - Statement:
+            - Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource: arn:aws:secretsmanager:us-east-1:310817946106:secret:rds!db-5a86cdd6-3cee-4905-be2a-a6890658843b-OkgwTk
+
       Environment:
         Variables:
-          DB_USER: your_user
-          DB_PASSWORD: your_password
-          DB_HOST: your-rds-proxy-endpoint
-          DB_NAME: your_db
-          DB_PORT: 5432
+          SECRET_ARN: arn:aws:secretsmanager:us-east-1:310817946106:secret:rds!db-5a86cdd6-3cee-4905-be2a-a6890658843b-OkgwTk
+          DB_HOST: proxy.proxy-c0v84yo00b0s.us-east-1.rds.amazonaws.com
+          DB_PORT: "5432"
 
       VpcConfig:
         SecurityGroupIds:
-          - sg-xxxxxxxx
+          - sg-07ed0b233a0edffc3
         SubnetIds:
-          - subnet-xxxx
-          - subnet-yyyy
+          - subnet-0091c4bf7b42e0dd2
+          - subnet-0ba773728afc15869
+          - subnet-0f9cbc78d6ff283bd

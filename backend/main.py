@@ -24,4 +24,8 @@ async def test_db(db: AsyncSession = Depends(get_db)):
     result = await db.execute(text("SELECT 1"))
     return {"result": [row[0] for row in result]}
 
+@app.get("/ping-db")
+async def ping():
+    return {"ok": True}
+
 handler = Mangum(app)
